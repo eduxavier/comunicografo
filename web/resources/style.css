@@ -1,0 +1,54 @@
+﻿#body_of_messages li {
+    width: 100%;
+    clear:left;
+}
+#body_of_messages li span {
+    padding-bottom: 10px;
+}
+.tokens {               
+    color: #76338A;
+    width: 100%;
+}
+p.tokens span, .usuario {
+    font-weight: bold;
+}
+.rate {
+                
+    font-weight:bold;
+}
+.mensagem, .usuario {
+    background-color: #E2C7E9;
+}
+
+ul { width: 95%; float:left; padding: 5px 0px 10px 5px}
+li { clear:both; width: 100%; }
+
+ul li ul {
+    width: 100%;
+    margin-left: 10px;
+    background-color: #FFEDDE !important;
+}
+ul li ul li {
+    width:100%;                
+    padding-top: 20px;
+}
+ul li ul li > .mensagem {
+    background-color: #FFBF88 !important;
+}
+input[type='button'] {
+    font-size: 40px;
+    padding: 30px;
+    padding: 25px 50px 25px 50px;
+                
+}
+#canvas {
+    width:400px;
+    height:400px;
+    border:1px solid black;
+    display:block;
+    margin:20px auto;
+}
+table.gabarito { width: 450px;}
+table.gabarito tr td {text-align:center; }
+table.gabarito tr.ok { background-color:blue; }
+table.gabarito tr.erro { background-color:red; }

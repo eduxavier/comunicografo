@@ -1,0 +1,56 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+    <script src="../weightners/TFIDF.js"></script>    
+    <script type="text/javascript" >
+
+        console.log("Iniciando o TF-IDF");
+
+        console.log("adicionando a primeira mensagem");
+
+        var message_1 = { bag:[] };
+        message_1.bag.push({ key: 'pens', frequency: 1 });
+        message_1.bag.push({ key: 'que', frequency: 1 });
+        message_1.bag.push({ key: 'alienigen', frequency: 1 });
+        message_1.bag.push({ key: 'invad', frequency: 1 });
+        message_1.bag.push({ key: 'terr', frequency: 1 });
+        message_1.bag.push({ key: 'far', frequency: 1 });
+        message_1.bag.push({ key: 'mesm', frequency: 1 });
+        message_1.bag.push({ key: 'conosc', frequency: 1 });
+        message_1.bag.push({ key: 'lei', frequency: 1 });
+        message_1.bag.push({ key: 'mais', frequency: 1 });
+        message_1.bag.push({ key: 'fort', frequency: 1 });
+        message_1.bag.push({ key: 'exerc', frequency: 1 });
+        message_1.bag.push({ key: 'form', frequency: 1 });
+        message_1.bag.push({ key: 'automatiz', frequency: 1 });
+        
+        TFIDF.add(message_1);
+        console.log("message_1.weight" + message_1.weight);
+        console.log("esperado weight" + 0.14);
+      
+        show("adicionando mensagem 1");
+
+        var message_2 = { bag: [] };
+        message_2.bag.push({ key: 'lala', frequency: 1 });
+        message_2.bag.push({ key: 'carn', frequency: 1 });
+
+        TFIDF.add(message_2);
+
+        show("adicionando mensagem 2");
+
+        function show(label)
+        {
+            console.log(label);
+            var messages = TFIDF.messages;
+            for (var i = 0; i < messages.length; i++) {
+                console.log(i + " weight: " + messages[i].weight);
+            }
+            console.log("");
+        }
+    </script>
+</head>
+<body>
+    
+</body>
+</html>

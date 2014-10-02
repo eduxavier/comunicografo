@@ -1,0 +1,445 @@
+<html>
+	<head>
+        <title>Associador automático de mensagens</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+        <script type="text/javascript" src="util/stemmer/lib/Snowball.min.js"></script>
+        <script type="text/javascript" src="algorithms/euclidian.js"></script>
+        <script src="algorithms/Manhattan.js"></script>
+        <script src="algorithms/cosine.js"></script>
+        <script type="text/javascript" src="core.helper.js"></script>
+        <script src="gabarito.js"></script>
+        <script type="text/javascript" src="util/json2xml.js"></script>
+        <script type="text/javascript" src="util/xml2json.js"></script>
+        <script type="text/javascript" src="readers/facebook.js" charset="ISO-8859-1"></script>
+        <script type="text/javascript" src="readers/pma_xml.js" charset="ISO-8859-1"></script>
+		<script type="text/javascript" src="core.messagesView.js" ></script>		
+        <script type="text/javascript" src="core.messagesSequencialView.js"></script>
+        <script type="text/javascript" src="core.messagesOrganizedView.js"></script>
+        <script type="text/javascript" src="messagesNestedView.js"></script>
+        <script type="text/javascript" src="algorithms/knn.js"></script>
+        <script type="text/javascript" src="weightners/TFIDF.js"></script>
+        <script type="text/javascript" src="core.tokenize.js" ></script>
+        <script type="text/javascript" src="core.distance.js"></script>
+        <script type="text/javascript" src="categorizar.js"></script>
+		<script type="text/javascript" src="core.js"></script>
+        <script src="node_modules/clusterfck/clusterfck-0.5.0.js"></script>
+        <script type="text/javascript" src="hello.js"></script>
+        <link href="resources/style.css" rel="stylesheet" />        
+	</head>
+
+	<body> 
+
+        <h1>Associador automático de mensagens</h1>
+        <form name="form_configuracao" id="form_configuracao">
+            <table>
+                <tr>
+                    <td width="50%" valign="top">
+                        <h2>Configurações do algoritimo</h2>
+                        <table>
+                            <tr title="Quantidade máxima de mensagens para considerar no passado">
+                                <td>Mensagens no passado para considerar</td>
+                                <td><input type="text" id="offset" value="3" /></td>
+                            </tr>
+                            <tr title="A quantidade total de tokens é usada como divisor do KNN. O resultado varia conforme o tamanho da mensagem.">
+                                <td>Calculo de similaridade</td>
+                                <td>
+                                    <label for="knn_message_a">Distância euclidiana</label>
+                                    <input type="radio" name="similaridade" value="1" checked="checked">
+                                    <br />
+                                    <label for="knn_message_b">Distância Manhattan</label>
+                                    <input type="radio" name="similaridade" value="4">
+                                    <br />
+                                    <label for="knn_message_b">Distância Cosseno</label>
+                                    <input type="radio" name="similaridade" value="3">                                    
+                                </td>
+                            </tr>
+                            <tr title="Valor máximo do resultado do cálculo da distância entre uma mensagem X e uma mensagem Y.">
+                                <td>Mínimo da distância entre mensagem X e Y</td>
+                                <td><input type="text" id="distance_min" value="0.0100" /></td>
+                            </tr>
+                            <tr>
+                                <td>Usar o login no calculo de distância</td>
+                                <td>
+                                    <label for="knn_message_a">Sim</label>
+                                    <input type="radio" name="distance_login" value="1" >
+                                    <br />
+                                    <label for="knn_message_b">Não</label>
+                                    <input type="radio" name="distance_login" value="2" checked="checked">
+                                </td>
+                            </tr>
+                            <tr title="A quantidade total de tokens é usada como divisor do KNN. O resultado varia conforme o tamanho da mensagem.">
+                                <td>Divisor do K-NN</td>
+                                <td>
+                                    <label for="knn_message_a">Usando o total da primeira mensagem</label>
+                                    <input type="radio" id="knn_message_a" name="knn_divisor" value="1" checked="checked">
+                                    <br />
+                                    <label for="knn_message_b">Usando o total da segunda mensagem</label>
+                                    <input type="radio" id="knn_message_b" name="knn_divisor" value="2">
+                                    <br />
+                                    <label for="knn_message_b">Usar o "maior total" entre as mensagens X e Y</label>
+                                    <input type="radio" id="knn_message_b" name="knn_divisor" value="3">
+                                    <br />
+                                    <label for="knn_message_b">Usar o "menor total" entre as mensagens X e Y</label>
+                                    <input type="radio" id="knn_message_b" name="knn_divisor" value="4">
+                                </td>
+                            </tr>
+                            <tr>
+                                   <td>Algoritimo</td>
+                                   <td>
+                                       <label for="knn_message_b">KNN por TF-IDF</label>
+                                        <input type="radio" id="Radio1" name="algoritimo" value="1">
+                                        <br />
+                                        <label for="knn_message_b">KNN por interseção</label>
+                                        <input type="radio" id="Radio2" name="algoritimo" value="2">
+                                   </td>
+
+                            </tr>
+                        </table>
+                    </td>
+                    <td width="50%">
+                        <h2>Sessões do bate papo</h2>
+                        <div style="width: 100%; height: 300px; overflow: auto; ">
+                            <h3><input type="radio" name="chat_session_type" value="4" /> Pesquisa Thiago - Aula</h3>                            
+
+                            <h3><input type="radio" name="chat_session_type" value="1" checked="checked" /> Facebook - Dialogo 1</h3>
+                            <textarea id="mensagem" rows="10" cols="85">
+Werther Azevedo Penso que se alienígenas invadissem a Terra, fariam o mesmo conosco. É a lei do mais forte exercida de forma automatizada.
+
+Daniel Monteiro Não aguentei ver todo...mas acho que vou ficar um tempo se conseguir comer carne...
+20 November at 14:46 · Like
+
+Daniel Monteiro A primeira cena já foi o suficiente
+20 November at 14:46 · Unlike · 1
+
+Werther Azevedo Bizarro. Muito impactante mesmo
+20 November at 14:47 · Like
+
+Daniel Monteiro Eu ando numa onda meio frutariana. Estou conseguindo me acostumar. Atualmente uns 60 a 70% das minhas refeições são frutas
+20 November at 14:48 · Like · 1
+
+Werther Azevedo Cuidado com os agrotóxicos! (no way out)
+20 November at 15:00 · Like
+
+Luiz De Simone Ae, Werther. Gotta talk to you.
+20 November at 15:08 via mobile · Like
+
+Werther Azevedo Manda uma msg por aqui mesmo ou email, Luiz. Se quiser, passo o telefone.
+20 November at 15:28 · Like
+
+Bruno Freitas Wow.
+20 November at 15:35 via mobile · Like
+
+Eduardo Xavier Eu vi até o final!! Eu pensei que a cabeça das vacas iam ser cortadas mas só estavam tirando leite. Minha visão é um pouco bizarra: faz parte! Não gosto de ver animal agonizando em dor mas num processo industrial nesse nível eu acho conveniente.. Eu acho que ninguém tem que virar vegetariano, mantendo uma dieta saudável e sem desperdiçar alimento, a gente consegue reduzir o número de animais que nos servem de comida.
+
+Outra saída é se alimentar de luz solar. Não vale fazer isso com as plantas só porque elas não gritam!! kkk
+20 November at 15:37 · Like
+
+Werther Azevedo Uma vez eu vi uma exposição de fotografias sobre a vida de um grupo tribal na África. Como eles obviamente tinham poucos recursos, só matavam os bois para comer em situações muito especiais. Casamentos, grandes festividades. Desta forma, eles respeitavam muito o animal, que era sacrificado por um bom motivo. Não só para comer uma carninha. Acho que deveríamos ser mais por aí. Chegamos num ponto onde o preço da nossa conveniência é um processo inegavalmente cruel. Tem que haver alternativa melhor entre isto e o vegetarianismo.
+20 November at 16:03 · Edited · Unlike · 4
+
+Eduardo Xavier Concordo, absolutamente. Embora eu seja um carnívoro suspeito!
+
+E sobre "Não só para comer uma carninha", você não fez "scrot-dance" falando isso? Porque eu imaginei e ri muito aqui!!
+
+A gente consome muita carne bovina e isso exige um processo produtivo pesado de outras coisas que danificam o meio-ambiente para manter esse animais até o momento do abate.
+
+Quando a gente compra aquele empacotado lindo de picanha, a gente abstraí tudo. Acho que é possível mudar a educação alimentar. Já te falei que na época que morava em Londres, carne era artigo de luxo, churrasco lá era raaaro. 100 pounds a peça de picanha!! Dava não... tinha época que o pessoal ganhava na média 50 na semana.
+
+Sinceramente, nem fazia tanta falta!!
+
+Mas vamos mudar a educação depois da inauguração aqui de casa!! kkkk
+20 November at 16:09 · Like · 1
+
+Werther Azevedo hahaha, compra uns bifes de soja!
+20 November at 16:11 · Like
+
+Eduardo Xavier não! ahahahhaha
+20 November at 16:12 · Like · 1
+
+Robson Waterkemper Eu estou fazendo um processo gradual e incremental para me tornar vegetariano com o tempo. Em Janeiro agora vai fazer 1 ano que não como carne de porco. E não como carne pelo menos 2 vezes por semana por causa do meu trabalho espiritual. Daqui uns 2 anos vou avaliar e talvez parar de comer carne de boi e mais 3 anos parar de comer carne de frango e assim por diante. Com esses intervalos, acredito que possa fazer uma transição mais suave, sem possibilidade de recaídas nem de angústia e ansiedade. No meu entendimento, comer carne é como se fosse um vício e como tal temos que mudar nossos hábitos gradativamente.
+20 November at 17:01 · Like · 2
+
+Daniel Monteiro Nesse ponto, admiro a culinária judaica e seus métdos Kosher de abate
+20 November at 19:20 · Like
+
+Elery Gomes esses chineses
+22 November at 10:23 · Like
+                            </textarea>
+
+                            <h3><input type="radio" name="chat_session_type" value="2" /> Facebook - Dialogo 2</h3>
+                            <textarea id="mensagem_2" rows="10" cols="85">
+Fabricia Nogueira olhando meus amigos no face, dá vontade de fazer uma festa, reunir todo mundo, abraçar a cada um e dizer a importância que cada um teve, tem e e terá na minha vida!!! Cada um tem uma história, um momento rs. Quando vc estiver lendo isso, deixe escrito aí embaixo um momento que vivenciamos juntos (as ). Lembranças boas devem ser lembradas, guardadas e contadas. bjs.
+Unlike ·  · Share · 28 minutes ago near Rio de Janeiro ·
+You and 4 others like this.
+
+Ana Carolina Brittes Não vivenciamos momentos fora do werner,mas so de ter tido a oportunidade de te conhecer e trabahado com vc foi bom d+...Saudades
+24 minutes ago via mobile · Like · 1
+
+Fabricia Nogueira me lembrou a festa no Lajedo kkk
+22 minutes ago · Like · 1
+
+Ana Carolina Brittes Zuamos todas...foi nossa despedida
+20 minutes ago via mobile · Like
+
+Beatriz Santos Me lembro que fui na sua cs,com a lucineide de moto e eu não sabia pilotar direito kkk e eu deixei a moto umas 10 vezes vc lembra?
+18 minutes ago via mobile · Like · 1
+
+Fabricia Nogueira kkkkkkk, não lembrava disso, só agora vc contando. Foi muito engraçado ela discutindo contigo e vc com ela kkk
+13 minutes ago · Like · 1
+
+Eduardo Xavier Eu lembro de tanta coisa, só não lembro os nomes dos lugares, as memórias mais emblemáticas estão na Bertha Lutz , no ponto de ônibus, aquelas festas de rua doidas e longe pacas onde a gente sempre tinha que voltar a pé - meu carro era bicileta e não ...See More
+11 minutes ago · Like · 1
+
+Beatriz Santos Foi mesmo,eu era e ainda sou muito ruim de moto kkk,meu marido comprou uma xj6 e não deixa nem eu chegar perto kkk.
+9 minutes ago via mobile · Like · 1
+
+Léo Vascão são muitos cara, você é uma pessoa maravilhosa, amiga enfim.... Vou lembrar aquela vez que estavamos num sítio sei lá fomos passear lembra? Caraca você foi me zuar dirigindo eu e a daniele sua prima e sua irmã, capotamos umas 3 vezes no ar, foi DEUS cara , o maior livramento meu... Mas, os bons deixo pra vc lembrar !!! Vários natais e ano novo com vcs !!! Boa noite se cuida... Tmj bjossss
+8 minutes ago via mobile · Like
+
+Fabricia Nogueira muuuuuuito bom meu amigo! são muitas as lembranças contigo! saudades daquele tempo. Fico muuuuito feliz em ter vc como amigo! Te amo muito. bjs
+8 minutes ago · Unlike · 2
+
+Léo Vascão Muitas saudades de vcs tb !!! Vc não tem noção... Amo vcs tb !!!!  tmj
+6 minutes ago via mobile · Like
+
+Beatriz Santos Eu não me conformo eu dirijo mt bem agora pilotar eu não consigo dá m raiva.
+6 minutes ago via mobile · Like
+
+Fabricia Nogueira Léo tô chorando de tanto lembrar daquilo kkkkkk
+5 minutes ago · Like · 1
+
+Fabricia Nogueira eduardo xavier, adorei!!! muitas saudades das nossas conversas. kkkkk morri de rir qd vc disse que eu era a última rs, continuo morando mal kkkkk. te adoro
+4 minutes ago · Unlike · 1
+
+Léo Vascão Kkkkk eu sempre lembro cara, a cena não sai da cabeça !! As fotos tiradas parecia que todos tinham sei lá... Deus é mais...
+4 minutes ago via mobile · Like · 1
+
+Aline Estevão Hum... férias com praia e muito baile, kkk tempinho bom heeein!! bjos
+3 minutes ago · Like · 1
+
+Fabricia Nogueira Aline minha amiga, lembra dos seus namoradinhos kkk tem histórias heim kkkk
+2 minutes ago · Like
+
+Aline Estevão Quem eu?? que nada... sempre fui quietinha, kkkkk
+2 minutes ago · Like
+
+Eduardo Xavier Fabricia, pois é... você era a última mas eu estava pior, ainda tinha que ir pra Brisa!! kkkk ô época boa!! Gostaria muito de reunir aquele grupinho de novo um dia!!!
+A few seconds ago · Like
+                            </textarea>
+
+                            <h3><input type="radio" name="chat_session_type" value="3" /> Facebook - Dialogo 2</h3>
+                            <textarea id="mensagem_3" rows="10" cols="85">
+                                Raísa Bakker Momento punitivista extremista
+                                Que revoltante, é um filha da PUTA mesmo
+                                Acho que nem a puta merece isso...
+                                Detalhes sórdidos do caso Ian Watkins são revelados durante o julgamento - MYWAY NOTICIA
+                                myway.br.msn.com
+                                O site onde pode Ouvir, Compartilhar e saber tudo sobre Música
+                                Like ·  · Share · 11 hours ago · Edited ·
+                                Vanessa Baptista likes this.
+
+                                Maryanna da Silveira podre!
+                                11 hours ago · Like · 1
+
+                                Caroline Heredia Tinha lido sobre o caso sem os detalhes e já fiquei enojada, agora com o caso completo, então... não sei se sinto mais ódio dele ou da fdp que abusou da própria filha. Uma pessoa assim não tem recuperação, na boa!
+                                11 hours ago · Like · 1
+
+                                Raísa Bakker FILHA DA PUTA MESMO vou até tirar o @$%@!%! do post
+                                11 hours ago · Like
+
+                                Gisela Ferreira O ser humano é capaz de tudo mesmo... que nojo...
+                                11 hours ago · Like
+
+                                Raísa Bakker eu e minha AK-47
+                                11 hours ago · Like
+
+                                Wilma Barrionuevo e essa mãe e as outras mulheres? Como pode isso?
+                                10 hours ago · Like · 2
+
+                                Raísa Bakker cambada de FILHA DA PUTA
+                                10 hours ago · Like · 1
+
+                                Raísa Bakker ia falar VADIA, mas seria elogio
+                                10 hours ago · Like · 1
+
+                                Raísa Bakker SEM ALMA, SEM CORAÇÃO
+                                10 hours ago · Like · 2
+
+                                Dan Flict Essas pessoas merecem viver no mesmo planeta que a gente? Alguem realmente acha que eles merecem ficar vivos?
+                                10 hours ago · Like · 2
+
+                                Raísa Bakker não sei, pra mim, a morte seria até um prêmio pra eles...
+                                10 hours ago · Like
+
+                                Janzito Barbosa Psicopata! Infelizmente estamos numa sociedade em que esse tipo de gente que manda. Literalmente.
+                                10 hours ago · Like
+
+                                Dan Flict gastar dinheiro da sociedade para mante-los vivos? Acho que nem isso eles merecem...
+                                10 hours ago · Like · 1
+
+                                Wilma Barrionuevo concordo com o Dan! E torço pra que exista inferno
+                                10 hours ago · Like
+
+                                Felippe Mendonça Mudou de idéia sobre pena de morte, Dan?
+                                O argumento do dinheiro é um dos melhores mesmo!
+                                10 hours ago · Like · 1
+
+                                Raísa Bakker pensei em outras formas, nada convencionais, de mantê-los vivos... melhor eu ficar quieta que daqui a pouco vai baixar a inquisidora e o martelo das feiticeiras...
+                                10 hours ago · Like · 1
+
+                                Raísa Bakker e nada perto de mantê-los as custas da sociedade...
+                                10 hours ago · Like · 1
+
+                                Dan Flict Felippe Mendonça acho que em casos assim, que as pessoas confessam serem lixos humanos, não faz sentido mante-los vivos, acredito que a sociedade e planeta, natureza etc, não tem absolutamente nada a ganhar por estas pessoas estarem presentes.
+                                10 hours ago · Like · 2
+
+                                Felippe Mendonça Agora imagina o seguinte: No Reino Unido ele é preso, retirado da sociedade. Acabou.
+                                Aqui, no Brasil, ele voltaria pra sociedade (seja pq as cadeias estão cheias, pq a justiça mandou soltar, pq ele fugiu, etc...). É por isso que eu acho que faz muito mais sentido pena de morte aqui do que nos EUA, por exemplo. Pq lá nego vai em cana (bom, pelo menos muito mais do que aqui). Aqui não. Não acho pena de morte o melhor castigo. Mas sim, uma maneira de nos livrarmos de pessoas assim...
+                                10 hours ago · Like · 1
+
+                                Wilma Barrionuevo São muitas as evidências! Confissões, videos... nesse caso eu sou sim pela pena de morte.
+                                10 hours ago · Like
+
+                                Felippe Mendonça Concordo com a Raísa... Tem castigo muito melhor pra pessoas assim do que a morte. Mas esses castigos só acontecem em países "atrasados" como alguns do Oriente Médio e Ásia...
+                                10 hours ago · Like
+
+                                Raísa Bakker Seria um castigo BEM atrasado Felippe, que que meus professores de penal não me leiam rs
+                                10 hours ago · Like
+
+                                Dan Flict O foda é que no BR o cara pode confessar sob tortura etc...
+                                10 hours ago · Like
+
+                                Raísa Bakker Aqui o método é a progressividade de regime de acordo o mérito do preso. Só que nunca dá muito certo, saem pior do que entram. Mas te falar... EUA é o maior encarcerador do planeta, não acho que essa estatística é boa...prender muito não significa anular, zerar, ou até mesmo diminuir a ocorrência de um crime.
+                                10 hours ago · Like
+
+                                Dan Flict Exatamente, mas o ponto é que não estamos defendendo a pena de morte para que os crimes relacionados diminuam. As estatísticas mostram que não é o caso. É mais para se desfazer do individuo mesmo.
+                                10 hours ago · Like · 1
+
+                                Raísa Bakker O que entra diretamente em conflito com o valor da vida humana, discussão longa rs E o argumento contrário vai girar em torno de: E ele não pensou no valor dessas crianças que ele abusou? Pois é...
+                                9 hours ago · Like · 1
+
+                                Wilma Barrionuevo O pessoal até quebra pedra nos USA. Depois sai e continua a abusar... Quando as evidências são claras como é o caso aqui, de confissão e video, é melhor fazer faxina mesmo.
+                                9 hours ago · Like
+
+                                Raísa Bakker Isso vai entrar em conflito com outros valores Wilma, como disse, a vida. Que aliás não seria apenas um valor, e sim, um fim. Lembrei de Kant agora. rs
+                                9 hours ago · Like · 1
+
+                                Raísa Bakker Eu defendo a não pena de morte pq acho que ele deve pagar de outras formas, e por aqui mesmo.
+                                9 hours ago · Like · 1
+
+                                Wilma Barrionuevo Eu te entendo perfeitamente, Isa, e a minha postura é contra tudo o que leio sobre espiritualidade... mas o fato de saber que um dia eles saem e continuam a abusar me deixa com essa postura. Sou mãe e esse pensamento reflete a indignação que estou sentindo.
+                                9 hours ago · Like · 1
+
+                                Felippe Mendonça http://g1.globo.com/.../mae-que-teria-vendido-virgindade...
+
+                                Mãe que teria vendido virgindade da filha por R$ 50 é procurada no Rio
+                                g1.globo.com
+                                Cinco homens foram presos suspeitos de abusar da jovem de 15 anos. Jaciara Moreira explorava sexualmente a filha em troca de drogas e dinheiro.
+                                9 hours ago · Like
+
+                                Raísa Bakker Wilma Barrionuevo quando eu falo de punição, não pensei em algo convencional para essas bizarrices. Por isso falei, espero que meus professores de penal não estejam me lendo rs
+                                9 hours ago · Like · 1
+
+                                Wilma Barrionuevo Não adianta cortar o bilau! Ele usa outras coisas. A maldade vem da alma e é infindável...
+                                9 hours ago · Like
+
+                                Camilla Albano MEU DEUS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! MONSTRO!!!!!!!!!!
+                                9 hours ago · Like · 2
+
+                                Camilla Albano e essas maes?????????? mereciam ser torturadas.. filhas da put...
+                                9 hours ago · Like · 2
+
+                                Camilla Albano só penso na minha bebe... que medo desse mundo louco..
+                                9 hours ago · Like · 3
+
+                                Pérola Thays Nenhuma brutalidade ou palavra chega ao alcance do que um... (Um o que? Que nome se dá pra isso?) DEMÔNIO desses merece. Tudo seria pouco, muito pouco. Esse aí merece ser queimado vivo.
+                                8 hours ago · Like · 2
+
+                                Dan Flict Vida humana? Deve ser valorizada a cima de tudo independente dem quem é ou do que fez? Discordo essencialmente desse valor. Acho que esse valor pode sim ser "perdido" dependendo dos atos cometidos.
+                                Como eu disse, a única forma que pra mim isso não funciona é quando existe risco de injustiça. Mas quando o cara confessa?! Por mim não tenho duvidas que todos neste planeta ficarão melhores sem estas pessoas.
+                                8 hours ago · Like · 2
+
+                                Dan Flict E não penso em mata-lo como punição para ele não, penso somente em livrar os demais de estarem no mesmo planeta deste individuo.
+                                8 hours ago · Like · 1
+
+                                Daniel Miranda como pai de 4 meninas, e estudante de direito, estou repensando muitas "baboseiras" do direito penal.... pena de morte é algo brando pra esse indivíduo......direito penal do inimigo, inimigo da humanidade...
+                                8 hours ago · Like · 1
+
+                                Raísa Bakker Então Dan Flict como disse, esse seria o argumento contrário a esse "desprezo" "livramento" em relação ao ser (racional? huamno? rs) que praticou tais atos, e tantos outros que cometem as mesmas brutalidade. Usando a vida humana como bem e valor, eles confrontariam essa ideia de "descartar vidas" ou "limpeza". É uma ponderação.
+                                Mas a morte pra ele, pra mim, seria uma bênção, e não o oposto. Mas se for por simplesmente livrar os demais de conviverem no mesmo planeta teríamos que tbm raciocinar sobre quantos mesmos PUTOS como esse existem, e deveríamos eliminar.
+                                6 hours ago · Edited · Like
+
+                                Raísa Bakker Será que eliminar acabaria como a prática em si? essas pessoas são doentes? são cientes do que estão fazendo ali? se movem por instintos primitivos? merecem uma chance? merecem a tortura? a morte? soluções rápidas vingariam as vítimas? a vingança é o caminho? muitas questões
+                                6 hours ago · Like
+
+                                Renan Reis lixo humano
+                                6 hours ago · Like · 2
+
+                                Raísa Bakker lixo mesmo... pena é pouco...
+                                6 hours ago · Like · 1
+
+                                Dan Flict Não acho que a prática em sí vai acabar. Eu vejo isso como um bug, de informática. É um elemento defeituoso da humanidade, um peça quebrada. Vão sempre existir. Mas uma vez identificado *sem sombra de dúvidas* aí eu acho que deve ser eliminado.
+                                O único argumento contrário que eu consigo ver é o de inocentes serem condenados por engano. De resto, sinceramente, não vejo NADA que justifique a vida dessa pessoa.
+                                5 hours ago · Edited · Like · 1
+
+                                Damara Abbot Só consigo pensar que Deus se apiade dessas crianças, para que recebam ajuda e consigam superar essa violência, violência esta que marca a alma das vítimas de forma tão profunda que na maioria das vezes define o adulto que essa criança será. Sei lá, não consigo nem me expressar direito.
+                                5 hours ago · Like
+
+                                Dan Flict Deus? A ultima coisa que eu consigo pensar é em deus.
+                                5 hours ago · Like · 1
+
+                                Claudio Martins nossa. sem palavras.
+                                5 hours ago · Like
+
+                                Damara Abbot Realmente fica muito pouco espaço para pensar, diante de tamanha atrocidade.
+                                5 hours ago · Like · 1
+
+                                Vanessa Baptista q nojooooooooooooo!!!! Pena de morte pra ele
+                                4 hours ago · Like
+
+                                Pablo Photophobia olha a senha do maluco..
+                                3 hours ago · Like · 1
+
+                                Jess Lima que absurdo
+                                3 hours ago · Like
+
+                                Vitor Ward Isso eh extremamente bizarro!
+                                26 minutes ago · Like
+
+                            </textarea>
+
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2" align="center">
+                        <input type="button" onclick="core.read()" value="Analisar" />
+                    </td>
+                </tr>
+            </table>
+        </form>
+
+
+        <h1>Gabarito das mensagens</h1>
+        <div id="gabarito">
+
+        </div>
+        <br />
+        <table width="1500px">
+            <tr valign="top">
+                <td width="33%">
+                    <ul id="body_of_messages"></ul>
+                </td>
+                <td width="33%">
+                    <ul id="body_of_organized_messages"></ul>
+                </td>
+                <td width="33%">
+                    <ul id="body_of_nested_messages"></ul>
+                </td>
+            </tr>
+        </table>
+        
+       
+        
+</body>
+</htm>

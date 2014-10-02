@@ -1,0 +1,49 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+    <script src="../scripts/raphael-min.js"></script>
+    <script src="../core.helper.js"></script>
+    <script src="../algorithms/knn.js"></script>
+    <script src="../core.messagesOrganizedView.js"></script>    
+    <link href="../resources/style.css" rel="stylesheet" />
+    <script src="../messagesNestedView.js"></script>
+  
+</head>
+<body>
+    <ul id="body_of_organized_messages"></ul>
+
+    <script type="text/javascript">
+        /*
+     A cada mensagem, deve se:
+        1 - Calcular o peso de todos os termos no documento, logo, todas as mensagem
+        2 - A nova mensagem deve ser correlacionada, mas:
+     Considerações
+        1 - O modelo que define o peso da mensagem é atualizado
+            a cada mensagem nova, por isso, é necessário refazer
+            todas as relações a cada nova mensagem
+        2 - O peso de cada mensagem pode mudar a medida que o dicionário de palavras
+            é aumentado.
+    */
+        var trainined_set = [
+            { id: 1, weight: 9.9811, autor: ["eduardo", "eduardo xavier"], texto: "Peso de 9.9811" },
+            { id: 2, weight: 0.2011, autor: ["pedro", "pedro madruga"], texto: "Peso de 0.2011" }
+        ];
+
+        trainined_set.push({ id: 3, weight: 5.2011, autor: ["fabricio", "fabricio val porto"], texto: "Peso de 5.2011" });
+        knn.run(trainined_set);
+
+        trainined_set.push({ id: 4, weight: 0.2010, autor: ["fabricio", "fabricio val porto"], texto: "Peso de 0.2010" });
+        knn.run(trainined_set);
+        trainined_set.push({ id: 5, weight: 0.2010, autor: ["fabricio", "fabricio val porto"], texto: "Peso de 0.2011" });
+        knn.run(trainined_set);
+        trainined_set.push({ id: 6, weight: 6.2010, autor: ["fabricio", "fabricio val porto"], texto: "Peso de 6.2011" });
+        knn.run(trainined_set);
+
+        messagesNestedView.messages = knn.messages;
+        messagesNestedView.log = this.log;
+        messagesNestedView.show();
+       
+    </script>
+</body>
+</html>
